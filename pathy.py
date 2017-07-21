@@ -9,8 +9,10 @@ import cv2, sys, math, codecs, time
 def path(img, k): 
         object_probability = 0
 
-#0 100 200        
-#170 255 255
+        #0 100 200        
+        #170 255 255
+#       alternate values
+        
         blue = 0
         lower = np.array([0,100,200])
         upper = np.array([185, 230, 255])
@@ -27,8 +29,8 @@ def path(img, k):
                 blue +=5
             else:
                 blue += 10
-#finds pixels that are more orange than blue
-#if less than 700 pixels are found, then the requirements are loosened
+#       finds pixels that are more orange than blue
+#       if less than 700 pixels are found, then the requirements are loosened
 
         n = 1
         if blue > 210: 
@@ -39,8 +41,8 @@ def path(img, k):
         kernel = np.ones((2,1),np.uint8)
         #kernel = np.ones((1, 1),np.uint8)
         dilation = cv2.dilate(mask,kernel,iterations = n)
-#dialates pixels to make finding large contours easier
-#dialation amount dependent on how much orange there is in image
+#       dialates pixels to make finding large contours easier
+#       dialation amount dependent on how much orange there is in image
 
 
 
@@ -58,23 +60,23 @@ def path(img, k):
 
         if largestIndex < 0:
             return
-#finds largest contour
+#       finds largest contour
 
         white_pixels = cv2.countNonZero(dilation)
 
         dilation = cv2.cvtColor(dilation, cv2.COLOR_GRAY2BGR)
-#draws contour
+#       draws contour
         
 
 
         cnt = contours[largestIndex]
-#        cv2.drawContours(dilation, contours, count, (180,180, 180), 2)   
-#        cv2.rectangle(dilation, (x, y), (x+w, y+h), (180,180,180), 2) 
+        #cv2.drawContours(dilation, contours, count, (180,180, 180), 2)   
+        #cv2.rectangle(dilation, (x, y), (x+w, y+h), (180,180,180), 2) 
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)
         box = np.int0(box)
         cv2.drawContours(dilation,[box],0,(0,255,0),2)
-#draws box around largest contour
+#       draws box around largest contour
 
 
 
@@ -83,7 +85,7 @@ def path(img, k):
          
         m = 0
 
-#inverted y values because down is +y
+#       inverted y values because down is +y
         if (l1 > l2):
             if box[0][0]-box[1][0] == 0:
                 m = 'undef' 
@@ -102,8 +104,7 @@ def path(img, k):
             theta += 180
         bearing = 90 - theta
         
-#        print(bearing)
-#finds angle of path
+#       finds angle of path
         
         if l1 > l2:
             r = math.sqrt(l1)
@@ -115,7 +116,7 @@ def path(img, k):
         y_center = int((box[0][1] + box[1][1] + box[2][1] + box[3][1])/4)
 
         cv2.circle(dilation, (int(x_center), int(y_center)), 2, (255,125,125), thickness = 6, lineType = 8)
-#finds center of path
+#    finds center of path
 
 
 
@@ -130,15 +131,15 @@ def path(img, k):
 
         
         fill = cv2.contourArea(contours[largestIndex])/(math.sqrt(l1)*math.sqrt(l2))
-        #% of rectangle is of path pixels
+#       % of rectangle is of path pixels
         
         
         sides = [math.sqrt(l1), math.sqrt(l2)]
         ratio = max(sides)/min(sides) 
-        #ratio of long side to short side
+#       ratio of long side to short side
 
         noise = float(white_pixels/contour_area)
-        #if noise is large, lots of orange particles not in "path"
+#       if noise is large, lots of orange particles not in "path"
         
         confidence = 0
 
@@ -154,8 +155,9 @@ def path(img, k):
 
 #probability that path exists        
         return ((r,theta), (x_center, y_center), confidence, dilation)
+#       needs reformatting ^^^^^
         #cv2.imwrite('../vision/logs/path_log_'+time.strftime('%x_%X')+'.png', img)
-        # writes log picture     
+#       writes log picture     
 
 
 
@@ -163,10 +165,13 @@ def path(img, k):
 def vision_func(slope, position, confidence):
     img = cv2.imread("input.txt")
     slope, position, confidence, dilation = path(img, 255)
+    #dont return dilation for vision func
     return slope, position, confidence, dilation
 
 slope, position, confidence, dilation = vision_func(0,0,0)
-
+'''
+Note: vision func should be a void that just changes the slope, position, and confidence
+'''
 
 
 
