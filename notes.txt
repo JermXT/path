@@ -1,0 +1,1 @@
+g++ path.cpp -o path `pkg-config --cflags --libs opencv`
