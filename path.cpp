@@ -53,7 +53,6 @@ void vision_func(cv::Mat image)
     {
         blue += 10;
     }
-    std::cout << "Breakpoint!" << std::endl;
 
     // Finds pixels that are more orange than blue
     // If less than 700 pixels are found, then the requirements are loosened
@@ -96,27 +95,22 @@ void vision_func(cv::Mat image)
     }
 
     // Convert to bgr
-    std::cout << "Breakpoint!" << std::endl;
     int white_pixels = cv::countNonZero(dilation);
     cv::cvtColor(dilation, dilation, cv::COLOR_GRAY2BGR);
     std::vector<cv::Point> cnt = contours[largestIndex];
 
     // Get rotated rectangle and draw contours
-    std::cout << "Breakpoint!" << std::endl;
     cv::RotatedRect rect = cv::minAreaRect(cnt);
-    std::vector<cv::Point> box;
-    std::cout << "Breakpoint!" << std::endl;
-    cv::boxPoints(rect, box);
-    cv::drawContours(dilation, box, 0, cv::Scalar(0,255,0), 2);
+    cv::Point2f box [4];
+    rect.points(box);
+    // cv::drawContours(dilation, box, 0, cv::Scalar(0,255,0), 2);
 
     // Draws box around largest contour
-    std::cout << "Breakpoint!" << std::endl;
     double l1 = std::pow((box[0].x - box[1].x), 2) + std::pow((box[0].y - box[1].y), 2);
     double l2 = std::pow((box[1].x - box[2].x), 2) + std::pow((box[1].y - box[2].y), 2);
     int m = -1;
 
     // Inverted y values because down is +y
-    std::cout << "Breakpoint!" << std::endl;
     double theta, bearing;
     if (l1 > l2) 
     {
@@ -154,7 +148,6 @@ void vision_func(cv::Mat image)
     {
         theta += 180;
         bearing = 90 - theta;
-        std::cout << bearing << std::endl;
     }
 
     float r;
@@ -168,7 +161,6 @@ void vision_func(cv::Mat image)
     }
 
     // Finds center of path
-    std::cout << "Breakpoint!" << std::endl;
     int x_center = (box[0].x + box[1].x + box[2].x + box[3].x) / 4;
     int y_center = (box[0].y + box[1].y + box[2].y + box[3].y) / 4;
     cv::circle(dilation, cv::Point(x_center, y_center), 2, cv::Scalar(255, 125, 125), 6, 8, 0);
@@ -214,7 +206,6 @@ void vision_func(cv::Mat image)
 
     // Show image
     cv::imshow("Dilation!", dilation);
-    cv::waitKey(0);
 }
 
 
@@ -222,6 +213,9 @@ int main(int argc, char** argv)
 {
     // Get the path
     cv::Mat img = cv::imread(argv[1], 1);
+    cv::imshow("Original!", img);
     vision_func(img);
+
+    cv::waitKey(0);
 }
 
