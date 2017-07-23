@@ -74,6 +74,7 @@ def path(img, k):
         #cv2.rectangle(dilation, (x, y), (x+w, y+h), (180,180,180), 2) 
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)
+        print(box[0][0])
         box = np.int0(box)
         cv2.drawContours(dilation,[box],0,(0,255,0),2)
 #       draws box around largest contour
@@ -82,7 +83,11 @@ def path(img, k):
 
         l1 = (box[0][0] - box[1][0]) ** 2 + (box[0][1] - box[1][1]) ** 2 
         l2 = (box[1][0] - box[2][0]) ** 2 + (box[1][1] - box[2][1]) ** 2
-         
+        print(type(l1))
+        print(type(l2))
+        print(type(box[0][0]))
+        print(box[0][0])
+
         m = 0
 
 #       inverted y values because down is +y
@@ -178,10 +183,9 @@ Note: vision func should be a void that just changes the slope, position, and co
 
 
 #testing code
-'''
 for i in range(10, 70):
         #print(i)
-        img = cv2.imread("path_training_" + str(i) + ".png")
+        img = cv2.imread("images/path_training_" + str(i) + ".png")
         cv2.imshow("image", img)
 ##        path(img, 32)
         a,b,c,dilation = path(img, 255)
@@ -190,5 +194,4 @@ for i in range(10, 70):
         cv2.imshow("default", dilation)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-'''
 
